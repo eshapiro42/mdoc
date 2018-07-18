@@ -1,0 +1,28 @@
+This is the main file. We can use variables in here:
+My name is {mdoc name} and my favorite color id {mdoc color}.
+
+We can include other files like this:
+
+------
+{mdoc include sub1.txt}
+------
+
+We can also include files that include other files:
+
+------
+{mdoc include sub2.txt}
+------
+
+Last, but certainly not least, we can tag sections of other documents to include.
+This is particularly handy for referencing code snippets which might change over time.
+For example, here's the definition of MDoc.read(), from mdoc.py:
+
+------
+{mdoc include tag read from ../mdoc.py}
+------
+
+Pretty cool, huh? Now you don't have to use LaTeX for everything anymore. :)
+
+You can compile this example like this:
+
+python mdoc.py --input main.txt --variables vars.json --output result.txt

@@ -1,0 +1,3 @@
+This is the file sub1.txt. We can use variables in here too:
+
+My favorite ice cream flavor is {mdoc flavor}!
