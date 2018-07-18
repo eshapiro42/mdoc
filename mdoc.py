@@ -1,10 +1,9 @@
 from __future__ import print_function
+from pathlib import Path
 import argparse
 import json
 import re
-import sys
-from collections import OrderedDict
-from pathlib import Path
+import textwrap
 
 def get_files():
     parser = argparse.ArgumentParser()
@@ -65,7 +64,6 @@ class MDoc(object):
     # {mdoc untag read}
 
     def parse(self, showvariables=False):
-        # Tag includes should be parsed first so any mdoc commands inside those get parsed
         self.parse_tag_includes()
         self.parse_includes()
         if not showvariables:
@@ -121,18 +119,18 @@ class MDoc(object):
         # Look for the last new line and chop off everything after it
         last_newline_idx = tag_contents.rfind('\n')
         tag_contents = tag_contents[:last_newline_idx]
+        # Remove any shared leading indents
+        tag_contents = textwrap.dedent(tag_contents)
         tag_mdoc = MDoc(input_str=tag_contents, variables=self.variables, showvariables=self.showvariables)
         tag_mdoc.input_path = include_path
         return tag_mdoc.parsed
 
-    # {mdoc tag find_variables}
     def find_variables(self):
         variable_regex = re.compile('{mdoc (?!include)(.*?)}')
         var_list = re.findall(variable_regex, self.parsed)
         for var in var_list:
             self.variables[var] = ''
         self.parsed = json.dumps(self.variables, indent=2)
-    # {mdoc untag find_variables}
 
 if __name__ == '__main__':
     input_file, output_file, variables = get_files()

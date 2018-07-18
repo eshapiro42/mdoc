@@ -1,5 +1,5 @@
 This is the main file. We can use variables in here:
-My name is {mdoc name} and my favorite color id {mdoc color}.
+My name is {mdoc name} and my favorite color is {mdoc color}.
 
 We can include other files like this:
 

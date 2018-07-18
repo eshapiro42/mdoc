@@ -1,5 +1,5 @@
 This is the main file. We can use variables in here:
-My name is Eric and my favorite color id blue.
+My name is Eric and my favorite color is blue.
 
 We can include other files like this:
 
@@ -28,9 +28,9 @@ This is particularly handy for referencing code snippets which might change over
 For example, here's the definition of MDoc.read(), from mdoc.py:
 
 ------
-    def read(self):
-        with open(self.input_path, 'r') as f:
-            self.input = f.read()
+def read(self):
+    with open(self.input_path, 'r') as f:
+        self.input = f.read()
 ------
 
 Pretty cool, huh? Now you don't have to use LaTeX for everything anymore. :)
