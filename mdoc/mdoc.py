@@ -9,15 +9,11 @@ class MDoc(object):
         self.showvariables = showvariables
         self.variables = variables
         if input_path is not None:
-            if not isinstance(input_path, (Path, str)):
-                raise TypeError('Input must be a file path')
             # Convert the path to a Path object. If it already is, this does nothing
             self.input_path = Path(input_path)
             # Read the input file into self.input
             self.read()
         elif input_str is not None:
-            if not isinstance(input_str, (str,)):
-                raise TypeError('Input must be a string')
             self.input = input_str
             self.input_path = None
         else:
@@ -31,7 +27,7 @@ class MDoc(object):
 
     # {mdoc tag read}
     def read(self):
-        with open(self.input_path, 'r') as f:
+        with self.input_path.open() as f:
             self.input = f.read()
     # {mdoc untag read}
 
@@ -71,11 +67,11 @@ class MDoc(object):
 
     def sub_tag_include(self, match):
         tag_str = match.group(1).strip()
-        include_path = match.group(2).strip()
+        include_path = Path(match.group(2).strip())
         tag_regex = re.compile('{{mdoc tag {}}}'.format(tag_str))
         untag_regex = re.compile('{{mdoc untag {}}}'.format(tag_str))
         # Read in the file
-        with open(include_path, 'r') as f:
+        with include_path.open() as f:
             f_str = f.read()
         # Look for the tag and untag and get their indices
         tag_match = re.search(tag_regex, f_str)

@@ -18,7 +18,7 @@ This is particularly handy for referencing code snippets which might change over
 For example, here's the definition of MDoc.read(), from mdoc.py:
 
 ------
-{mdoc include tag read from ../mdoc.py}
+{mdoc include tag read from ../mdoc/mdoc.py}
 ------
 
 Pretty cool, huh? Now you don't have to use LaTeX for everything anymore. :)

@@ -13,6 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/eshapiro42/mdoc",
     packages=setuptools.find_packages(),
+    install_requires=['pathlib'],
     scripts=['bin/mdoc'],
     classifiers=(
         "Programming Language :: Python",
