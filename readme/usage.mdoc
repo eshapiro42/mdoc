@@ -3,15 +3,15 @@
 Using mdoc is simple, once you've installed it. Simply navigate into the folder where your main document template lives and run:
 
 ```
-mdoc --input <INPUT_DOCUMENT> --output <OUTPUT_DOCUMENT> --variables <VARIABLES_JSON>
+mdoc --input INPUT_DOCUMENT --output OUTPUT_DOCUMENT --variables VARIABLES_JSON
 ```
 
-This will parse INPUT_DOCUMENT, insert any variables defined in VARIABLES_JSON, and spit out OUTPUT_DOCUMENT.
+This will parse ```INPUT_DOCUMENT```, insert any variables defined in ```VARIABLES_JSON```, and spit out ```OUTPUT_DOCUMENT```.
 
-If you do not wish to generate an output file and simply want to see what the output would look like, you can replace the ```--output <OUTPUT_DOCUMENT>``` with ```--dryrun```.
+If you do not wish to generate an output file and simply want to see what the output would look like, you can replace the ```--output OUTPUT_DOCUMENT``` with ```--dryrun```.
 
 If you've lost track of all the variables needed throughout your documents, you can use ```--showvariables``` rather than ```--output``` or ```--dryrun``` and it will spit out a JSON-formatted list of all the variables you need. You can pipe this into a file to make things really easy!
 
 ```
-mdoc --input <INPUT_DOCUMENT> --showvariables > <VARIABLES_JSON>
+mdoc --input INPUT_DOCUMENT --showvariables > VARIABLES_JSON
 ```
