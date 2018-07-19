@@ -1,7 +1,7 @@
 # mdoc
 ### Modular documents
 
-With mdoc you can create recursive, modular documents. It has three main feature:
+With mdoc you can create recursive, modular documents. It has three main features:
 
 1. It lets you include entire files in other documents.
 2. It lets you include snippets of files in other documents.
