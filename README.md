@@ -21,8 +21,8 @@ mdoc accomplishes all of this by parsing your input files for mdoc tags. These t
 
 You might be wondering how, if this readme is generated using mdoc, I was able to type {mdoc ...} above without it being parsed. This is thanks to the ```static``` option, which prevents included files from being parsed and includes them verbatim:
 
-* ```{mdoc include file.ext static}``` <-- includes ```file.ext``` but does not parse it for mdoc tags
-* ```{mdoc include tag eq1 from file.ext static}``` <-- includes snippet ```eq1``` from ```file.ext``` but does not parse it for mdoc tags
+1. ```{mdoc include file.ext static}``` <-- includes ```file.ext``` but does not parse it for mdoc tags
+2. ```{mdoc include tag eq1 from file.ext static}``` <-- includes snippet ```eq1``` from ```file.ext``` but does not parse it for mdoc tags
 
 There is no static option for variables, since that wouldn't make any sense.
 
