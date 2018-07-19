@@ -1,7 +1,0 @@
-This is the file sub2.txt. Inside of it, we can include sub1.txt again:
-
----
-{mdoc include sub1.txt}
----
-
-Woah.
