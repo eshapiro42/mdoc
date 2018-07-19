@@ -61,7 +61,7 @@ class MDoc(object):
         include_path = match.group(1).strip()
         try:
             include_mdoc = MDoc(input_path=include_path, variables=self.variables, showvariables=self.showvariables)
-        except FileNotFoundError:
+        except IOError:
             raise LookupError('The include file {0} was not found but was requested by {1}'.format(include_path, self.input_path))
         return include_mdoc.parsed
 
