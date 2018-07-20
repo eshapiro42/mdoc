@@ -22,38 +22,42 @@ class MDoc(object):
             raise ValueError('MDoc constructors must specify either an input path or an input string')
         self.parsed = self.input
         # Delete any blank lines at the end
-        while self.parsed[-1] == '\n':
-            self.parsed = self.parsed[:-1]
+        try:
+            while self.parsed[-1] == '\n':
+                self.parsed = self.parsed[:-1]
+        except IndexError:
+            pass
         if not static:
             # Parse the input into self.parsed
             self.parse(showvariables)
 
-    # {mdoc tag read}
+    # {mdoc snip read}
     def read(self):
         with self.input_path.open() as f:
             self.input = f.read()
-    # {mdoc untag read}
+    # {mdoc unsnip read}
 
     def parse(self, showvariables=False):
         if not showvariables:
             self.parse_variables()
         else:
             self.find_variables()
-        self.parse_tag_includes()
-        self.parse_includes()
         self.parse_evals()
+        # Snippets and includes must be parsed last in order for static to work
+        self.parse_snippets()
+        self.parse_includes()
 
     def parse_variables(self):
-        variable_regex = re.compile('{mdoc (?!include)(?!eval)(.*?)}')
+        variable_regex = re.compile('{mdoc (?!include)(?!snippet)(?!snip)(?!unsnip)(?!eval)(.*?)}')
         self.parsed = re.sub(variable_regex, self.sub_variable, self.parsed)
 
     def parse_includes(self):
-        include_regex = re.compile('{mdoc include (?!tag)(.*?)(static)?}')
+        include_regex = re.compile('{mdoc include (.*?)(static)?}')
         self.parsed = re.sub(include_regex, self.sub_include, self.parsed)
 
-    def parse_tag_includes(self):
-        tag_include_regex = re.compile('{mdoc include tag (.*?) from (.*?)(static)?}')
-        self.parsed = re.sub(tag_include_regex, self.sub_tag_include, self.parsed)
+    def parse_snippets(self):
+        snippet_regex = re.compile('{mdoc snippet (.*?) from (.*?)(static)?}')
+        self.parsed = re.sub(snippet_regex, self.sub_snippet, self.parsed)
 
     def parse_evals(self):
         eval_regex = re.compile('{mdoc eval (.*?)}')
@@ -82,36 +86,36 @@ class MDoc(object):
             ret = include_mdoc.parsed
         return ret
 
-    def sub_tag_include(self, match):
-        tag_str = match.group(1).strip()
+    def sub_snippet(self, match):
+        snippet_name = match.group(1).strip()
         include_path = Path(match.group(2).strip())
-        tag_regex = re.compile('{{mdoc tag {}}}'.format(tag_str))
-        untag_regex = re.compile('{{mdoc untag {}}}'.format(tag_str))
+        snip_regex = re.compile('{{mdoc snip {}}}'.format(snippet_name))
+        unsnip_regex = re.compile('{{mdoc unsnip {}}}'.format(snippet_name))
         # Read in the file
         with Path(include_path).open() as f:
             f_str = f.read()
-        # Look for the tag and untag and get their indices
-        tag_match = re.search(tag_regex, f_str)
-        untag_match = re.search(untag_regex, f_str)
-        if tag_match is None:
-            raise LookupError('The tag {0} was not found in {1} but was requested by {2}'.format(tag_str, include_path, self.input_path))
-        if untag_match is None:
-            raise LookupError('The tag {0} was never closed in {1}'.format(tag_str, include_path))
-        tag_idx = tag_match.end() + 1
-        untag_idx = untag_match.start()
+        # Look for the snip and unsnip tags and get their indices
+        snip_match = re.search(snip_regex, f_str)
+        unsnip_match = re.search(unsnip_regex, f_str)
+        if snip_match is None:
+            raise LookupError('The snippet {0} was not found in {1} but was requested by {2}'.format(snippet_name, include_path, self.input_path))
+        if unsnip_match is None:
+            raise LookupError('The snippet {0} was never closed in {1}'.format(snippet_name, include_path))
+        snip_idx = snip_match.end() + 1
+        unsnip_idx = unsnip_match.start()
         # Slice the file at these indices
-        tag_contents = f_str[tag_idx:untag_idx]
+        snippet_contents = f_str[snip_idx:unsnip_idx]
         # Look for the last new line and chop off everything after it
-        last_newline_idx = tag_contents.rfind('\n')
-        tag_contents = tag_contents[:last_newline_idx]
+        last_newline_idx = snippet_contents.rfind('\n')
+        snippet_contents = snippet_contents[:last_newline_idx]
         # Remove any shared leading indents
-        tag_contents = textwrap.dedent(tag_contents)
+        snippet_contents = textwrap.dedent(snippet_contents)
         if match.group(3) is not None:
-            ret = tag_contents
+            ret = snippet_contents
         else:
-            tag_mdoc = MDoc(input_str=tag_contents, variables=self.variables, showvariables=self.showvariables)
-            tag_mdoc.input_path = include_path
-            ret = tag_mdoc.parsed
+            snippet_mdoc = MDoc(input_str=snippet_contents, variables=self.variables, showvariables=self.showvariables)
+            snippet_mdoc.input_path = include_path
+            ret = snippet_mdoc.parsed
         return ret
 
     def sub_eval(self, match):
@@ -119,7 +123,7 @@ class MDoc(object):
         return str(eval(eval_str))
 
     def find_variables(self):
-        variable_regex = re.compile('{mdoc (?!include)(?!eval)(.*?)}')
+        variable_regex = re.compile('{mdoc (?!include)(?!snippet)(?!snip)(?!unsnip)(?!eval)(.*?)}')
         var_list = re.findall(variable_regex, self.parsed)
         for var in var_list:
             self.variables[var] = ''
@@ -161,5 +165,6 @@ def console():
     if output_file is -1 or output_file == -2:
         print(mdoc.parsed)
     else:
-        with open(output_file, 'w') as f:
+        output_file.touch()
+        with output_file.open(mode='w') as f:
             f.write(mdoc.parsed)
