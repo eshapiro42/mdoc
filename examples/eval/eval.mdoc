@@ -1,0 +1,10 @@
+Some tests of the mdoc eval tag:
+
+Generate a list of the first 64 integers:
+{mdoc eval range(64)}
+
+First 10 squares via a list comprehension:
+{mdoc eval [n**2 for n in range(10)]}
+
+Print an mdoc variable in a very convoluted way:
+{mdoc eval self.variables['name']}

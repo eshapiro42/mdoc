@@ -41,9 +41,10 @@ class MDoc(object):
             self.find_variables()
         self.parse_tag_includes()
         self.parse_includes()
+        self.parse_evals()
 
     def parse_variables(self):
-        variable_regex = re.compile('{mdoc (?!include)(.*?)}')
+        variable_regex = re.compile('{mdoc (?!include)(?!eval)(.*?)}')
         self.parsed = re.sub(variable_regex, self.sub_variable, self.parsed)
 
     def parse_includes(self):
@@ -53,6 +54,10 @@ class MDoc(object):
     def parse_tag_includes(self):
         tag_include_regex = re.compile('{mdoc include tag (.*?) from (.*?)(static)?}')
         self.parsed = re.sub(tag_include_regex, self.sub_tag_include, self.parsed)
+
+    def parse_evals(self):
+        eval_regex = re.compile('{mdoc eval (.*?)}')
+        self.parsed = re.sub(eval_regex, self.sub_eval, self.parsed)
 
     def sub_variable(self, match):
         variable_str = match.group(1).strip()
@@ -109,8 +114,12 @@ class MDoc(object):
             ret = tag_mdoc.parsed
         return ret
 
+    def sub_eval(self, match):
+        eval_str = match.group(1).strip()
+        return str(eval(eval_str))
+
     def find_variables(self):
-        variable_regex = re.compile('{mdoc (?!include)(.*?)}')
+        variable_regex = re.compile('{mdoc (?!include)(?!eval)(.*?)}')
         var_list = re.findall(variable_regex, self.parsed)
         for var in var_list:
             self.variables[var] = ''
