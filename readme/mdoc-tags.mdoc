@@ -17,6 +17,7 @@ There is no static option for variables or evals, since that wouldn't make any s
 Snippets are defined as follows:
 
 ```
+# Inside file.ext
 {mdoc snip snippet_name}
 ...
 snippet contents
@@ -27,7 +28,8 @@ snippet contents
 You can then reference the snippet name and the file it lives in to include it in another document:
 
 ```
-{mdoc snippet snippet_name}
+# Inside main file
+{mdoc snippet snippet_name from file.ext}
 ```
 
 This is very handy for including snippets of code that may change over time, as well as other fluctuating content.
