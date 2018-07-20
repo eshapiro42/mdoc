@@ -1,4 +1,7 @@
+import os
 import setuptools
+
+os.system('cd readme; mdoc -i README.mdoc -o ../README.md -v vars.json')
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
