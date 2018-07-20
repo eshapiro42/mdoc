@@ -1,0 +1,3 @@
+This is sub2.txt. In it, we can include sub1.txt:
+
+{mdoc include sub1.txt}

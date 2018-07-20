@@ -1,0 +1,1 @@
+This is sub3.txt. We can reference variables in here. The 'filename' variable is currently set to {mdoc filename}.

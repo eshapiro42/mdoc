@@ -1,0 +1,15 @@
+We can include files inside other files. Here's sub1.txt:
+
+{mdoc include sub1.txt}
+
+These files also can be specified via mdoc variables if we want:
+
+{mdoc include {mdoc filename}}
+
+We can also include files which themselves include other files. Here's sub2.txt, which includes sub1.txt:
+
+{mdoc include sub2.txt}
+
+Any files we include can use the variables we pass into mdoc:
+
+{mdoc include sub3.txt}
