@@ -70,10 +70,12 @@ class MDoc(object):
         return self.variables[variable_str]
 
     def sub_include(self, match):
-        include_path = match.group(1).strip()
+        include_path = Path(match.group(1).strip())
+        if not include_path.is_absolute():
+            include_path = self.input_path.parent.joinpath(include_path)
         if match.group(2) is not None:
             try:
-                with Path(include_path).open() as f:
+                with include_path.open() as f:
                     include_str = f.read()
             except IOError:
                 raise LookupError('The include file {0} was not found but was requested by {1}'.format(include_path, self.input_path))
@@ -89,6 +91,8 @@ class MDoc(object):
     def sub_snippet(self, match):
         snippet_name = match.group(1).strip()
         include_path = Path(match.group(2).strip())
+        if not include_path.is_absolute():
+            include_path = self.input_path.parent.joinpath(include_path)
         snip_regex = re.compile('{{mdoc snip {}}}'.format(snippet_name))
         unsnip_regex = re.compile('{{mdoc unsnip {}}}'.format(snippet_name))
         # Read in the file
