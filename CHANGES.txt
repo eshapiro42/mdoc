@@ -1,0 +1,6 @@
+v0.0.9, 07/21/2018
+  Github Issue #1: Make all paths relative to the current file
+  Github Issue #2: Deal with infinite recursion more gracefully
+
+v0.0.8, 07/20/2018
+  Initial release

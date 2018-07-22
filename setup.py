@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="mdoc",
-    version="0.0.8",
+    version="0.0.9",
     author="Eric Shapiro",
     author_email="eshapiro42@gmail.com",
     description="Modular documents",
