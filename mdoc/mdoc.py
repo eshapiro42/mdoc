@@ -5,9 +5,12 @@ import json
 import re
 import textwrap
 
+include_graph = {}
+
 class MDoc(object):
 
-    def __init__(self, input_path=None, input_str=None, variables={}, showvariables=False, static=False):
+    def __init__(self, input_path=None, input_str=None, variables={}, showvariables=False, static=False, path=None):
+        global include_graph
         self.showvariables = showvariables
         self.variables = variables
         if input_path is not None:
@@ -17,10 +20,11 @@ class MDoc(object):
             self.read()
         elif input_str is not None:
             self.input = input_str
-            self.input_path = None
+            self.input_path = path
         else:
             raise ValueError('MDoc constructors must specify either an input path or an input string')
         self.parsed = self.input
+        include_graph[self.input_path.resolve().as_posix()] = []
         # Delete any blank lines at the end
         try:
             while self.parsed[-1] == '\n':
@@ -70,17 +74,22 @@ class MDoc(object):
         return self.variables[variable_str]
 
     def sub_include(self, match):
+        global include_graph
         include_path = Path(match.group(1).strip())
         if not include_path.is_absolute():
             include_path = self.input_path.parent.joinpath(include_path)
-        if match.group(2) is not None:
+        if match.group(2) is not None: # Static include
             try:
                 with include_path.open() as f:
                     include_str = f.read()
             except IOError:
                 raise LookupError('The include file {0} was not found but was requested by {1}'.format(include_path, self.input_path))
             ret = include_str
-        else:
+        else: # Non-static include
+            # Add to include_graph and check for infinite recursion
+            include_graph[self.input_path.resolve().as_posix()].append(include_path.resolve().as_posix())
+            if cycle_exists(include_graph):
+                raise Exception('\n\nThe file {0} includes itself, either directly or indirectly. Here is the include graph:\n\n{1}'.format(include_path.resolve().as_posix(), include_graph))
             try:
                 include_mdoc = MDoc(input_path=include_path, variables=self.variables, showvariables=self.showvariables)
             except IOError:
@@ -89,6 +98,7 @@ class MDoc(object):
         return ret
 
     def sub_snippet(self, match):
+        global include_graph
         snippet_name = match.group(1).strip()
         include_path = Path(match.group(2).strip())
         if not include_path.is_absolute():
@@ -114,11 +124,14 @@ class MDoc(object):
         snippet_contents = snippet_contents[:last_newline_idx]
         # Remove any shared leading indents
         snippet_contents = textwrap.dedent(snippet_contents)
-        if match.group(3) is not None:
+        if match.group(3) is not None: # Static include
             ret = snippet_contents
-        else:
-            snippet_mdoc = MDoc(input_str=snippet_contents, variables=self.variables, showvariables=self.showvariables)
-            snippet_mdoc.input_path = include_path
+        else: # Non-static include
+            # Add to include_graph and check for infinite recursion
+            include_graph[self.input_path.resolve().as_posix()].append(include_path.resolve().as_posix())
+            if cycle_exists(include_graph):
+                raise Exception('\n\nThe file {0} includes itself, either directly or indirectly. Here is the include graph:\n\n{1}'.format(include_path.resolve().as_posix(), include_graph))
+            snippet_mdoc = MDoc(input_str=snippet_contents, variables=self.variables, showvariables=self.showvariables, path=include_path)
             ret = snippet_mdoc.parsed
         return ret
 
@@ -132,6 +145,31 @@ class MDoc(object):
         for var in var_list:
             self.variables[var] = ''
         self.parsed = json.dumps(self.variables, indent=2)
+
+def dfs_visit(G, u, color, found_cycle):
+    if found_cycle[0]:
+        return
+    color[u] = "gray"
+    for v in G[u]:
+        try:
+            if color[v] == "gray":
+                found_cycle[0] = True
+                return
+            if color[v] == "white":
+                dfs_visit(G, v, color, found_cycle)
+        except KeyError:
+            pass
+    color[u] = "black"
+
+def cycle_exists(G):
+    color = {u:"white" for u in G }
+    found_cycle = [False]
+    for u in G:
+        if color[u] == "white":
+            dfs_visit(G, u, color, found_cycle)
+        if found_cycle[0]:
+            break
+    return found_cycle[0]
 
 def get_files():
     parser = argparse.ArgumentParser()
@@ -160,6 +198,7 @@ def get_files():
     return input_file, output_file, variables
 
 def console():
+    global include_graph
     input_file, output_file, variables = get_files()
     if output_file == -2:
         showvariables = True

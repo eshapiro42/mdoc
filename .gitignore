@@ -1,4 +1,5 @@
 build/*
 dist/*
+scratch/*
 mdoc.egg-info*
 *.pyc
