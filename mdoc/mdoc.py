@@ -5,12 +5,10 @@ import json
 import re
 import textwrap
 
-include_graph = {}
-
 class MDoc(object):
 
     def __init__(self, input_path=None, input_str=None, variables={}, showvariables=False, static=False, path=None):
-        global include_graph
+        self.include_graph = {}
         self.showvariables = showvariables
         self.variables = variables
         if input_path is not None:
@@ -24,7 +22,7 @@ class MDoc(object):
         else:
             raise ValueError('MDoc constructors must specify either an input path or an input string')
         self.parsed = self.input
-        include_graph[self.input_path.resolve().as_posix()] = []
+        self.include_graph[self.input_path.resolve().as_posix()] = []
         # Delete any blank lines at the end
         try:
             while self.parsed[-1] == '\n':
@@ -74,7 +72,6 @@ class MDoc(object):
         return self.variables[variable_str]
 
     def sub_include(self, match):
-        global include_graph
         include_path = Path(match.group(1).strip())
         if not include_path.is_absolute():
             include_path = self.input_path.parent.joinpath(include_path)
@@ -87,9 +84,9 @@ class MDoc(object):
             ret = include_str
         else: # Non-static include
             # Add to include_graph and check for infinite recursion
-            include_graph[self.input_path.resolve().as_posix()].append(include_path.resolve().as_posix())
-            if cycle_exists(include_graph):
-                raise Exception('\n\nThe file {0} includes itself, either directly or indirectly. Here is the include graph:\n\n{1}'.format(include_path.resolve().as_posix(), include_graph))
+            self.include_graph[self.input_path.resolve().as_posix()].append(include_path.resolve().as_posix())
+            if cycle_exists(self.include_graph):
+                raise Exception('\n\nThe file {0} includes itself, either directly or indirectly. Here is the include graph:\n\n{1}'.format(include_path.resolve().as_posix(), self.include_graph))
             try:
                 include_mdoc = MDoc(input_path=include_path, variables=self.variables, showvariables=self.showvariables)
             except IOError:
@@ -98,7 +95,6 @@ class MDoc(object):
         return ret
 
     def sub_snippet(self, match):
-        global include_graph
         snippet_name = match.group(1).strip()
         include_path = Path(match.group(2).strip())
         if not include_path.is_absolute():
@@ -128,9 +124,9 @@ class MDoc(object):
             ret = snippet_contents
         else: # Non-static include
             # Add to include_graph and check for infinite recursion
-            include_graph[self.input_path.resolve().as_posix()].append(include_path.resolve().as_posix())
-            if cycle_exists(include_graph):
-                raise Exception('\n\nThe file {0} includes itself, either directly or indirectly. Here is the include graph:\n\n{1}'.format(include_path.resolve().as_posix(), include_graph))
+            self.include_graph[self.input_path.resolve().as_posix()].append(include_path.resolve().as_posix())
+            if cycle_exists(self.include_graph):
+                raise Exception('\n\nThe file {0} includes itself, either directly or indirectly. Here is the include graph:\n\n{1}'.format(include_path.resolve().as_posix(), self.include_graph))
             snippet_mdoc = MDoc(input_str=snippet_contents, variables=self.variables, showvariables=self.showvariables, path=include_path)
             ret = snippet_mdoc.parsed
         return ret
@@ -198,7 +194,6 @@ def get_files():
     return input_file, output_file, variables
 
 def console():
-    global include_graph
     input_file, output_file, variables = get_files()
     if output_file == -2:
         showvariables = True
