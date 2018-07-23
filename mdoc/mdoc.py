@@ -5,10 +5,12 @@ import json
 import re
 import textwrap
 
+class MDocError(Exception):
+    pass
+
 class MDoc(object):
 
     def __init__(self, input_path=None, input_str=None, variables={}, showvariables=False, static=False, path=None):
-        self.include_graph = {}
         self.showvariables = showvariables
         self.variables = variables
         if input_path is not None:
@@ -20,9 +22,8 @@ class MDoc(object):
             self.input = input_str
             self.input_path = path
         else:
-            raise ValueError('MDoc constructors must specify either an input path or an input string')
+            raise MDocError('MDoc constructors must specify either an input path or an input string')
         self.parsed = self.input
-        self.include_graph[self.input_path.resolve().as_posix()] = []
         # Delete any blank lines at the end
         try:
             while self.parsed[-1] == '\n':
@@ -68,7 +69,7 @@ class MDoc(object):
     def sub_variable(self, match):
         variable_str = match.group(1).strip()
         if not variable_str in self.variables:
-            raise LookupError('The variable {0} was not defined but was requested by {1}'.format(variable_str, self.input_path))
+            raise MDocError('The variable {0} was not defined but was requested by {1}'.format(variable_str, self.input_path))
         return self.variables[variable_str]
 
     def sub_include(self, match):
@@ -80,17 +81,15 @@ class MDoc(object):
                 with include_path.open() as f:
                     include_str = f.read()
             except IOError:
-                raise LookupError('The include file {0} was not found but was requested by {1}'.format(include_path, self.input_path))
+                raise MDocError('The include file {0} was not found but was requested by {1}'.format(include_path, self.input_path))
             ret = include_str
         else: # Non-static include
-            # Add to include_graph and check for infinite recursion
-            self.include_graph[self.input_path.resolve().as_posix()].append(include_path.resolve().as_posix())
-            if cycle_exists(self.include_graph):
-                raise Exception('\n\nThe file {0} includes itself, either directly or indirectly. Here is the include graph:\n\n{1}'.format(include_path.resolve().as_posix(), self.include_graph))
             try:
                 include_mdoc = MDoc(input_path=include_path, variables=self.variables, showvariables=self.showvariables)
             except IOError:
-                raise LookupError('The include file {0} was not found but was requested by {1}'.format(include_path, self.input_path))
+                raise MDocError('The include file {0} was not found but was requested by {1}'.format(include_path, self.input_path))
+            except RuntimeError:
+                raise MDocError('The include file {0} tried to include a file which led to infinite recursion'.format(include_path))
             ret = include_mdoc.parsed
         return ret
 
@@ -108,9 +107,9 @@ class MDoc(object):
         snip_match = re.search(snip_regex, f_str)
         unsnip_match = re.search(unsnip_regex, f_str)
         if snip_match is None:
-            raise LookupError('The snippet {0} was not found in {1} but was requested by {2}'.format(snippet_name, include_path, self.input_path))
+            raise MDocError('The snippet {0} was not found in {1} but was requested by {2}'.format(snippet_name, include_path, self.input_path))
         if unsnip_match is None:
-            raise LookupError('The snippet {0} was never closed in {1}'.format(snippet_name, include_path))
+            raise MDocError('The snippet {0} was never closed in {1}'.format(snippet_name, include_path))
         snip_idx = snip_match.end() + 1
         unsnip_idx = unsnip_match.start()
         # Slice the file at these indices
@@ -123,11 +122,10 @@ class MDoc(object):
         if match.group(3) is not None: # Static include
             ret = snippet_contents
         else: # Non-static include
-            # Add to include_graph and check for infinite recursion
-            self.include_graph[self.input_path.resolve().as_posix()].append(include_path.resolve().as_posix())
-            if cycle_exists(self.include_graph):
-                raise Exception('\n\nThe file {0} includes itself, either directly or indirectly. Here is the include graph:\n\n{1}'.format(include_path.resolve().as_posix(), self.include_graph))
-            snippet_mdoc = MDoc(input_str=snippet_contents, variables=self.variables, showvariables=self.showvariables, path=include_path)
+            try:
+                snippet_mdoc = MDoc(input_str=snippet_contents, variables=self.variables, showvariables=self.showvariables, path=include_path)
+            except RuntimeError:
+                raise MDocError('The include file {0} tried to include a file which led to infinite recursion'.format(include_path))
             ret = snippet_mdoc.parsed
         return ret
 
@@ -141,31 +139,6 @@ class MDoc(object):
         for var in var_list:
             self.variables[var] = ''
         self.parsed = json.dumps(self.variables, indent=2)
-
-def dfs_visit(G, u, color, found_cycle):
-    if found_cycle[0]:
-        return
-    color[u] = "gray"
-    for v in G[u]:
-        try:
-            if color[v] == "gray":
-                found_cycle[0] = True
-                return
-            if color[v] == "white":
-                dfs_visit(G, v, color, found_cycle)
-        except KeyError:
-            pass
-    color[u] = "black"
-
-def cycle_exists(G):
-    color = {u:"white" for u in G }
-    found_cycle = [False]
-    for u in G:
-        if color[u] == "white":
-            dfs_visit(G, u, color, found_cycle)
-        if found_cycle[0]:
-            break
-    return found_cycle[0]
 
 def get_files():
     parser = argparse.ArgumentParser()
