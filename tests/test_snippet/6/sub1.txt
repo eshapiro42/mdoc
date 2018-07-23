@@ -1,0 +1,3 @@
+This is the first included file, sub1.txt. It tries to include sub2.txt:
+
+{mdoc include sub2.txt}

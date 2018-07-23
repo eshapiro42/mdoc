@@ -1,0 +1,3 @@
+This test ensures that we can include snippets which include other files:
+
+This is the second included file, sub2.txt.

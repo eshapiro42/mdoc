@@ -1,0 +1,3 @@
+This test ensures that an included file cannot include the original file:
+
+{mdoc include sub.txt}

@@ -1,0 +1,7 @@
+This test ensures that we can include a file which statically includes another file:
+
+This file (sub.txt) includes main.txt statically, and thus should not lead to a recursion error.
+
+This test ensures that we can include a file which statically includes another file:
+
+{mdoc include sub.txt}

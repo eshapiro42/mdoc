@@ -1,0 +1,5 @@
+This test ensures that we can include files which use mdoc variables:
+
+This is the included file, sub.txt. It uses the mdoc variable 'var':
+
+Testing... testing... is this thing on?

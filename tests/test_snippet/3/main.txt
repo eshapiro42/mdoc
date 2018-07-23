@@ -1,0 +1,5 @@
+This test ensures that we can include multiple files:
+
+{mdoc include sub1.txt}
+
+{mdoc include sub2.txt}

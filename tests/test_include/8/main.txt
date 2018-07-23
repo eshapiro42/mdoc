@@ -1,0 +1,3 @@
+This test ensures that we can include files which use mdoc evals:
+
+{mdoc include sub.txt}

@@ -1,0 +1,3 @@
+This file (sub.txt) includes main.txt statically, and thus should not lead to a recursion error.
+
+{mdoc include main.txt static}

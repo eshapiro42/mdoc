@@ -1,0 +1,5 @@
+This test ensures that we can include multiple files:
+
+This is the first included file, sub1.txt.
+
+This is the second included file, sub2.txt.
