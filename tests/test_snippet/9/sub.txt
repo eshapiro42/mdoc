@@ -1,0 +1,5 @@
+This is the file sub.txt. It contains a snippet which uses an mdoc variable:
+
+{mdoc snip snippetysnip}
+My favorite color is {mdoc color}.
+{mdoc unsnip snippetysnip}

@@ -1,3 +1,3 @@
-This is the second included file, sub2.txt. It tries to include sub1.txt:
+This is the file sub2.txt. It tries to include itself:
 
-{mdoc include sub1.txt}
+{mdoc include sub2.txt}

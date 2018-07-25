@@ -1,0 +1,5 @@
+This is the included file, sub.txt. It does an mdoc eval inside a snippet to generate a list of 100 elements:
+
+{mdoc snip snap}
+{mdoc eval range(100)}
+{mdoc unsnip snap}

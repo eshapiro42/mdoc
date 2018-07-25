@@ -1,0 +1,5 @@
+This test ensures that we can include two snippets with different names from the same file:
+
+{mdoc snippet 1 from sub.txt}
+
+{mdoc snippet 2 from sub.txt}

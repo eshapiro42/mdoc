@@ -1,0 +1,9 @@
+This is the file sub.txt. It contains two snippets with different names:
+
+{mdoc snip 1}
+This is snippet 1.
+{mdoc unsnip 1}
+
+{mdoc snip 2}
+This is snippet 2.
+{mdoc unsnip 2}

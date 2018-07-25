@@ -1,0 +1,5 @@
+This test ensures that we can include two snippets with different names from the same file:
+
+This is snippet 1.
+
+This is snippet 2.

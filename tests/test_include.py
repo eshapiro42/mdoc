@@ -7,9 +7,11 @@ def boilerplate(testnum, vars={}):
     # Generate an mdoc based on the main.txt file in the relevant directory
     generated = MDoc('test_include/{0}/main.txt'.format(testnum), variables=vars)
     # Read in the expected result
-    with open('test_include/{0}/expected.txt'.format(testnum), 'r') as f:
+    with open('test_include/{0}/expected.txt'.format(testnum), 'rU') as f:
         expected = f.read()
     # Check that they are the same
+    print(repr(generated.parsed))
+    print(repr(expected))
     assert generated.parsed == expected
 
 def test_include_1():

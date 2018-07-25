@@ -1,0 +1,5 @@
+This is the file sub.txt. It has some text outside the snippet
+
+# {mdoc snip snippetysnip}
+and some inside.
+# {mdoc unsnip snippetysnip}

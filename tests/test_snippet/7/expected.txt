@@ -1,5 +1,4 @@
-This test ensures that we can include files which use mdoc variables:
+This test ensures that we can include a snippet which statically includes another snippet:
 
-This is the included file, sub.txt. It uses the mdoc variable 'var':
-
-Testing... testing... is this thing on?
+Let's include snippet2 from sub2.txt:
+{mdoc include sub2.txt}

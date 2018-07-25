@@ -1,0 +1,5 @@
+This test ensures that we can include two snippets with the same name from multiple files:
+
+{mdoc snippet snippy from sub1.txt}
+
+{mdoc snippet snippy from sub2.txt}

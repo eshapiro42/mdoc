@@ -1,0 +1,5 @@
+{mdoc snip 2}
+This is snippet 2. It tries to include itself:
+
+{mdoc snippet 2 from sub1.txt}
+{mdoc unsnip 2}

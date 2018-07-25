@@ -1,3 +1,5 @@
-This file (sub.txt) includes main.txt statically, and thus should not lead to a recursion error.
+This is the file sub.txt. It has some text outside the snippet
 
-{mdoc include main.txt static}
+{mdoc snip snippetysnip}
+and some inside. It also tries to use the non-declared variable {mdoc doesnotexist}.
+{mdoc unsnip snippetysnip}

@@ -1,3 +1,5 @@
-This is the first included file, sub1.txt. It tries to include sub2.txt:
+This is the file sub1.txt. It has some text outside the snippet
 
-{mdoc include sub2.txt}
+{mdoc snip snippetysnip}
+and some inside. It also statically includes the file {mdoc include sub2.txt static}.
+{mdoc unsnip snippetysnip}

@@ -1,5 +1,5 @@
-This test ensures that we can statically include a file:
+This test ensures that we can include multiple snippets:
 
-This file tries to include itself, but since main.txt treats it as static it should not.
+This is snippet 1.
 
-{mdoc include sub.txt}
+This is snippet 2.

@@ -1,0 +1,5 @@
+This test ensures that we can include two snippets with the same name from multiple files:
+
+This is the snippet from sub1.txt.
+
+This is the snippet from sub2.txt.

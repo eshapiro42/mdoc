@@ -1,10 +1,6 @@
-This test ensures that we can include multiple files:
+This test ensures that we can include a snippet which statically includes a file:
 
-This is the first included file, sub1.txt. It tries to include sub2.txt:
+and some inside. It also statically includes the file This is the file sub2.txt. It tries to include itself:
 
 {mdoc include sub2.txt}
-
-
-This is the second included file, sub2.txt. It tries to include sub1.txt:
-
-{mdoc include sub1.txt}
+.

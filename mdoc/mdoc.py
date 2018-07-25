@@ -46,9 +46,9 @@ class MDoc(object):
         else:
             self.find_variables()
         self.parse_evals()
-        # Snippets and includes must be parsed last in order for static to work
-        self.parse_snippets()
+        # Includes and snippets must be parsed last (and in that order) in order for static includes to work to work
         self.parse_includes()
+        self.parse_snippets()
 
     def parse_variables(self):
         variable_regex = re.compile('{mdoc (?!include)(?!snippet)(?!snip)(?!unsnip)(?!eval)(.*?)}')

@@ -1,3 +1,0 @@
-This is the included file, sub.txt. It uses the mdoc variable 'var':
-
-{mdoc var}

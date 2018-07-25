@@ -1,0 +1,6 @@
+This is the file sub1.txt. It contains a snippet which statically includes a snippet from sub2.txt:
+
+{mdoc snip snippet1}
+Let's include snippet2 from sub2.txt:
+{mdoc snippet snippet2 from sub2.txt static}
+{mdoc unsnip snippet1}

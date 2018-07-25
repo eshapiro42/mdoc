@@ -1,0 +1,3 @@
+{mdoc snip snippy}
+This is the snippet from sub2.txt.
+{mdoc unsnip snippy}

@@ -1,0 +1,3 @@
+{mdoc snip 2}
+This is snippet 2.
+{mdoc unsnip 2}

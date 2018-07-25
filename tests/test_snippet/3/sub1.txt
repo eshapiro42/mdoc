@@ -1,1 +1,6 @@
-This is the first included file, sub1.txt.
+This is the first included file, sub1.txt. It contains the snippet snippet1:
+
+{mdoc snip snippet1}
+Which includes the snippet snippet2 from sub2.txt:
+{mdoc snippet snippet2 from sub2.txt}
+{mdoc unsnip snippet1}

@@ -1,5 +1,4 @@
-This test ensures that we can include multiple files:
+This test ensures that we can include snippets which include other files:
 
-This is the first included file, sub1.txt.
-
-This is the second included file, sub2.txt.
+Which includes the snippet snippet2 from sub2.txt:
+Hello!
